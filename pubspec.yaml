@@ -46,6 +46,7 @@ dependencies:
   form_builder_validators: ^9.1.0
   davi: ^3.4.1
   form_builder_file_picker: ^4.1.0
+  file: ^7.0.0
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,4 @@
+import 'package:file/local.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -6,6 +7,8 @@ import 'package:unidb/db/db.dart';
 import 'package:unidb/db/db_schema.dart';
 import 'package:unidb/db/table.dart';
 import 'package:window_size/window_size.dart';
+
+const fileSystem = LocalFileSystem();
 
 class DbLoaderNotifier extends ChangeNotifier {
   DbLoaderNotifier();
@@ -29,7 +32,7 @@ class DbLoaderNotifier extends ChangeNotifier {
     }
 
     final path = result.files.first.path!;
-    db = await Db.load(path);
+    db = await Db.load(fileSystem: fileSystem, path: path);
     setWindowTitle("DBMS - ${db!.schema.name}");
     notifyListeners();
   }
@@ -48,7 +51,7 @@ class DbLoaderNotifier extends ChangeNotifier {
       return;
     }
 
-    db = await Db.create(path: result, name: name);
+    db = await Db.create(fileSystem: fileSystem, path: result, name: name);
     setWindowTitle("DBMS - ${db!.schema.name}");
     notifyListeners();
   }
@@ -70,7 +73,7 @@ class DbNotifier extends ChangeNotifier {
   int get size => _db.size;
 
   Future<void> save() async {
-    await _db.save();
+    await _db.save(fileSystem: fileSystem);
     notifyListeners();
   }
 
@@ -78,9 +81,10 @@ class DbNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addTable(
-      {required String name,
-      required Iterable<({String name, ColumnType type})> columns}) {
+  void addTable({
+    required String name,
+    required Iterable<({String name, ColumnType type})> columns,
+  }) {
     _db.addTable(name: name, columns: columns);
     notifyListeners();
   }

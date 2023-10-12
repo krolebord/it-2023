@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:binarize/binarize.dart';
+import 'package:file/file.dart';
 import 'package:unidb/db/columns.dart';
 import 'package:unidb/db/db_schema.dart';
 import 'package:unidb/db/table.dart';
@@ -14,7 +14,6 @@ class DbLoadError extends Error {
 
 class Db {
   final String path;
-  late File file;
   final DbSchema schema;
   DateTime lastSaved;
   int size;
@@ -25,9 +24,7 @@ class Db {
     required this.lastSaved,
     required this.size,
     File? file,
-  }) {
-    this.file = file ?? File(path);
-  }
+  });
 
   void addTable({
     required String name,
@@ -42,7 +39,8 @@ class Db {
     schema.tables.remove(name);
   }
 
-  Future<void> save() async {
+  Future<void> save({required FileSystem fileSystem}) async {
+    var file = fileSystem.file(path);
     if (!await file.exists()) {
       file = await file.create(recursive: true);
     }
@@ -59,26 +57,32 @@ class Db {
     await file.writeAsBytes(bytes);
   }
 
-  static Future<Db> create({required String path, required String name}) async {
-    final file = File(path);
+  static Future<Db> create({
+    required FileSystem fileSystem,
+    required String path,
+    required String name,
+  }) async {
+    final file = fileSystem.file(path);
     if (await file.exists()) {
       throw DbLoadError('Database already exists');
     }
 
     final schema = DbSchema(name: name, tables: {});
     final db = Db._(
-        path: path,
-        schema: schema,
-        file: file,
-        lastSaved: DateTime.now(),
-        size: 0);
-    await db.save();
+      path: path,
+      schema: schema,
+      file: file,
+      lastSaved: DateTime.now(),
+      size: 0,
+    );
+    await db.save(fileSystem: fileSystem);
 
     return db;
   }
 
-  static FutureOr<Db> load(String path) async {
-    final file = File(path);
+  static FutureOr<Db> load(
+      {required FileSystem fileSystem, required String path}) async {
+    final file = fileSystem.file(path);
     if (!await file.exists()) {
       throw DbLoadError('Database does not exist');
     }
@@ -89,10 +93,11 @@ class Db {
     final lastSaved = DateTime.fromMillisecondsSinceEpoch(payload.get(int64));
 
     return Db._(
-        path: path,
-        schema: schema,
-        file: file,
-        lastSaved: lastSaved,
-        size: bytes.length);
+      path: path,
+      schema: schema,
+      file: file,
+      lastSaved: lastSaved,
+      size: bytes.length,
+    );
   }
 }
