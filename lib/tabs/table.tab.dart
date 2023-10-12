@@ -122,8 +122,8 @@ class TableTab extends HookConsumerWidget {
 
     return Davi(
       model,
-      lastRowWidget: OutlinedButton(
-        onPressed: () async {
+      lastRowWidget: InkWell(
+        onTap: () async {
           final row =
               await RowEditDialog.show(context: context, columns: allColumns);
 
@@ -133,7 +133,7 @@ class TableTab extends HookConsumerWidget {
 
           table.addRow(row);
         },
-        child: const Text('Add row'),
+        child: const Center(child: Text('Add row')),
       ),
     );
   }
