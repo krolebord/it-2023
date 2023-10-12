@@ -110,6 +110,11 @@ class TableNotifier extends ChangeNotifier {
     table.removeRow(id);
     notifyListeners();
   }
+
+  void duplicateRow(int id) {
+    table.duplicateRow(id);
+    notifyListeners();
+  }
 }
 
 final dbLoaderProvider = ChangeNotifierProvider((ref) => DbLoaderNotifier());

@@ -47,6 +47,7 @@ class TableTab extends HookConsumerWidget {
         DaviColumn(
           resizable: false,
           sortable: false,
+          width: 140,
           cellAlignment: Alignment.center,
           headerPadding: const EdgeInsets.only(left: 10),
           leading: IconButton(
@@ -97,6 +98,15 @@ class TableTab extends HookConsumerWidget {
                   table.removeRow(row.data[0] as int);
                 },
                 icon: const Icon(Icons.delete),
+                color: Colors.white60,
+                splashRadius: 16,
+                padding: EdgeInsets.zero,
+              ),
+              IconButton(
+                onPressed: () {
+                  table.duplicateRow(row.data[0] as int);
+                },
+                icon: const Icon(Icons.copy),
                 color: Colors.white60,
                 splashRadius: 16,
                 padding: EdgeInsets.zero,

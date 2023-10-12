@@ -32,7 +32,7 @@ class Table {
     _data = data;
   }
 
-  addRow(Map<String, Object?> row) {
+  void addRow(Map<String, Object?> row) {
     final id = _idCounter++;
     _data[id] = _columns.map((e) {
       if (e.name == '\$id') {
@@ -47,7 +47,7 @@ class Table {
     }).toList();
   }
 
-  updateRow(int id, Map<String, Object?> row) {
+  void updateRow(int id, Map<String, Object?> row) {
     _data[id] = _columns.map((e) {
       if (e.name == '\$id') {
         return id;
@@ -61,8 +61,14 @@ class Table {
     }).toList();
   }
 
-  removeRow(int id) {
+  void removeRow(int id) {
     _data.remove(id);
+  }
+
+  void duplicateRow(int id) {
+    final newId = _idCounter++;
+    _data[newId] = List.from(_data[id]!);
+    _data[newId]![0] = newId;
   }
 }
 
